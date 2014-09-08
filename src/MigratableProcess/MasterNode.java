@@ -155,7 +155,9 @@ public class MasterNode {
 		ObjectInputStream feedBackStream = recieveFeedBackStream(socket);
 		try {
 			feedback = (MigratableProcess) feedBackStream.readObject();
-		} catch (ClassNotFoundException | IOException e) {
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return feedback;
@@ -167,7 +169,9 @@ public class MasterNode {
 		ObjectInputStream feedBackStream = recieveFeedBackStream(socket);
 		try {
 			feedback = (String) feedBackStream.readObject();
-		} catch (ClassNotFoundException | IOException e) {
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return feedback;
