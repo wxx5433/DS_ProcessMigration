@@ -32,6 +32,7 @@ public class MasterNode {
 		terminal = new Thread(terminalThread);
 		listen.start();
 		terminal.start();
+		processManager = new ProcessManager();
 	}
 
 	public void newSlaveOnline(String slaveName, Socket socket,
@@ -40,6 +41,7 @@ public class MasterNode {
 		slavesManagement.put(slaveNodeID, socket);
 		slavesOutputMap.put(slaveNodeID, out);
 		System.out.println(slaveNodeID.toString() + " add to management!");
+		processManager.newSlaveOnline(slaveNodeID);
 	}
 
 	public void newCommand(String command) {
@@ -83,6 +85,7 @@ public class MasterNode {
 	private void listStatus() {
 		System.out
 				.println("list all the status of the slaves and running process!");
+		processManager.listStatus();
 	}
 
 	private void migrateProcess(String command) {
@@ -112,6 +115,7 @@ public class MasterNode {
 		ObjectOutputStream outputStream = getSlaveSocketStream(slaveNodeID);
 		try {
 			outputStream.writeObject(migratableProcess);
+			outputStream.reset();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -125,11 +129,11 @@ public class MasterNode {
 		String[] commandArray = command.split(" ");
 		String processName = commandArray[1];
 		String destSlave = null;
-		if (commandArray.length == 3) {
+//		if (commandArray.length == 3) {
 			destSlave = commandArray[2];
-		} else {
-			destSlave = getAvailableDestSlave().toString();
-		}
+//		} else {
+//			destSlave = getAvailableDestSlave().toString();
+//		}
 		sendCommand(destSlave, command);
 
 		String feedback = getFeedback(destSlave);
@@ -189,6 +193,7 @@ public class MasterNode {
 		ObjectOutputStream outputStream = getSlaveSocketStream(slaveNodeID);
 		try {
 			outputStream.writeObject(command);
+			outputStream.reset();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

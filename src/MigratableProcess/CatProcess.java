@@ -62,7 +62,7 @@ public class CatProcess extends MigratableProcess {
 				out.println(line);
 				
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(100000);
 				} catch (InterruptedException e) {
 					
 				}

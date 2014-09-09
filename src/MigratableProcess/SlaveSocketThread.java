@@ -32,9 +32,11 @@ public class SlaveSocketThread implements Runnable {
 				String command = (String) input.readObject();
 				// send feedback
 				Object feedback = slaveNode.recieveCommand(command);
+				System.out.println((CatProcess)feedback);
 				ObjectOutputStream out = new ObjectOutputStream(
 						socket.getOutputStream());
 				out.writeObject(feedback);
+				System.out.println((CatProcess)feedback);
 				out.reset();
 			}
 			socket.close();
