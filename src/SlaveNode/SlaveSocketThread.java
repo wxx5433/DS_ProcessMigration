@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import MigratableProcess.MigratableProcess;
+
 public class SlaveSocketThread implements Runnable {
 	private NodeID masterNodeID;
 	private boolean stop;

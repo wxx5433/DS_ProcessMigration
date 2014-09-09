@@ -9,11 +9,21 @@ import SlaveNode.SlaveProcesses;
 public class ProcessManager {
 	private ConcurrentHashMap<NodeID, SlaveProcesses> processesManagement = new ConcurrentHashMap<NodeID, SlaveProcesses>();
 
+	/**
+	 * Register the newly connected slave node.
+	 * @param slaveNodeID
+	 */
 	public void newSlaveOnline(NodeID slaveNodeID) {
 		SlaveProcesses slaveProcesses = new SlaveProcesses();
 		processesManagement.put(slaveNodeID, slaveProcesses);
 	}
 
+	/**
+	 * Register the newly launched process.
+	 * @param slaveNodeID - which the new process i
+	 * @param threadID
+	 * @param processName
+	 */
 	public void newProcessLaunched(NodeID slaveNodeID, long threadID,
 			String processName) {
 		SlaveProcesses slaveProcesses = processesManagement.get(slaveNodeID);

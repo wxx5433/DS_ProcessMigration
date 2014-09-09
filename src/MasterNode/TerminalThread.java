@@ -2,7 +2,17 @@ package MasterNode;
 
 import java.util.Scanner;
 
+/**
+ * This is the class that the <code>MasterNode</code> use to run a terminal thread,
+ * so that it can receive users' inupt.
+ * 
+ * @author Xiaoxiang Wu(xiaoxiaw)
+ * @author Ye Zhou
+ */
 public class TerminalThread implements Runnable {
+	/**
+	 * The masterNode which this terminal thread belongs to.
+	 */
 	private MasterNode masterNode;
 	private boolean stop;
 
@@ -33,13 +43,17 @@ public class TerminalThread implements Runnable {
 							+ "7.Terminate a process in a slave\n"
 							+ "exp:processterminate 128.237.213.96:8888 10110\n"
 							+ "8.Exit\n" + "exp:exit\n");
-			// get user inputs
+			/* Receive User's command */
 			Scanner keyboard = new Scanner(System.in);
 			String command = keyboard.nextLine();
-			masterNode.newCommand(command);
+			/* parse the command */
+			masterNode.parseCommand(command);
 		}
 	}
 
+	/**
+	 * Terminate the terminal thread.
+	 */
 	public void terminate() {
 		stop = true;
 	}

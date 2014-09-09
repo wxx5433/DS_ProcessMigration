@@ -26,17 +26,24 @@ public class MasterNode {
 		portNum = DEFAULT_PORT_NUM;
 	}
 
+	/**
+	 * Initialize MasterNode on a specific node
+	 * @param portNum
+	 */
 	public MasterNode(int portNum) {
 		this.portNum = portNum;
 	}
 
 	private void start() {
+		/* start a listen thread to accept socket connection */
 		socketListener = new SocketListenThread(this, this.portNum);
 		listen = new Thread(socketListener);
+		listen.start();
+		/* start a terminal thread to accept users' input */
 		terminalThread = new TerminalThread(this);
 		terminal = new Thread(terminalThread);
-		listen.start();
 		terminal.start();
+		/* start a process manager to monitor all processes run on slave nodes */
 		processManager = new ProcessManager();
 	}
 
@@ -50,7 +57,11 @@ public class MasterNode {
 		processManager.newSlaveOnline(slaveNodeID);
 	}
 
-	public void newCommand(String command) {
+	/**
+	 * Parse users' input command
+	 * @param command
+	 */
+	public void parseCommand(String command) {
 		System.out.println(command + "input");
 		if (command.startsWith("launch")) {
 			launchNewProcess(command);
