@@ -2,7 +2,9 @@ package MigratableProcess;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -26,15 +28,17 @@ public class SocketListenThread implements Runnable {
 			while (!stop) {
 				try {
 					Socket socket = listener.accept();
-					BufferedReader input = new BufferedReader(
-							new InputStreamReader(socket.getInputStream()));
-					String slaveName = input.readLine();
+					InputStream input = socket.getInputStream();
+					ObjectInputStream inputStream = new ObjectInputStream(input);
+					String slaveName = (String)inputStream.readObject();
 					ObjectOutputStream out = new ObjectOutputStream(
 							socket.getOutputStream());
 					System.out.println(slaveName + ":online!");
-					masterNode.newSlaveOnline(slaveName, socket, out);
+					masterNode.newSlaveOnline(slaveName, socket, out, inputStream);
 				} catch (IOException e) {
 					System.out.println("Error occur when listening:");
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
 			}

@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MasterNode {
 	private ConcurrentHashMap<NodeID, Socket> slavesManagement = new ConcurrentHashMap<NodeID, Socket>();
 	private ConcurrentHashMap<NodeID, ObjectOutputStream> slavesOutputMap = new ConcurrentHashMap<NodeID, ObjectOutputStream>();
+	private ConcurrentHashMap<NodeID, ObjectInputStream> slavesInputMap = new ConcurrentHashMap<NodeID, ObjectInputStream>();
 	private static final int DEFAULT_PORT_NUM = 10000;
 	private int portNum;
 	private SocketListenThread socketListener;
@@ -32,14 +33,17 @@ public class MasterNode {
 		terminal = new Thread(terminalThread);
 		listen.start();
 		terminal.start();
+		processManager = new ProcessManager();
 	}
 
 	public void newSlaveOnline(String slaveName, Socket socket,
-			ObjectOutputStream out) {
+			ObjectOutputStream out, ObjectInputStream input) {
 		NodeID slaveNodeID = NodeID.fromString(slaveName);
 		slavesManagement.put(slaveNodeID, socket);
 		slavesOutputMap.put(slaveNodeID, out);
+		slavesInputMap.put(slaveNodeID, input);
 		System.out.println(slaveNodeID.toString() + " add to management!");
+		processManager.newSlaveOnline(slaveNodeID);
 	}
 
 	public void newCommand(String command) {
@@ -83,6 +87,7 @@ public class MasterNode {
 	private void listStatus() {
 		System.out
 				.println("list all the status of the slaves and running process!");
+		processManager.listStatus();
 	}
 
 	private void migrateProcess(String command) {
@@ -112,6 +117,7 @@ public class MasterNode {
 		ObjectOutputStream outputStream = getSlaveSocketStream(slaveNodeID);
 		try {
 			outputStream.writeObject(migratableProcess);
+			outputStream.reset();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -125,16 +131,13 @@ public class MasterNode {
 		String[] commandArray = command.split(" ");
 		String processName = commandArray[1];
 		String destSlave = null;
-		if (commandArray.length == 3) {
+//		if (commandArray.length == 3) {
 			destSlave = commandArray[2];
-		} else {
-			destSlave = getAvailableDestSlave().toString();
-		}
+//		} else {
+//			destSlave = getAvailableDestSlave().toString();
+//		}
 		sendCommand(destSlave, command);
-
 		String feedback = getFeedback(destSlave);
-		System.out.println(feedback);
-
 		System.out.println(feedback);
 		int threadID = Integer.parseInt(feedback);
 		processManager.newProcessLaunched(destSlave, threadID, processName);
@@ -151,8 +154,7 @@ public class MasterNode {
 
 	private MigratableProcess getMigratedProcess(String destSlave) {
 		MigratableProcess feedback = null;
-		Socket socket = getSlaveSocket(NodeID.fromString(destSlave));
-		ObjectInputStream feedBackStream = recieveFeedBackStream(socket);
+		ObjectInputStream feedBackStream = recieveFeedBackStream(NodeID.fromString(destSlave));
 		try {
 			feedback = (MigratableProcess) feedBackStream.readObject();
 		} catch (ClassNotFoundException e) {
@@ -165,8 +167,7 @@ public class MasterNode {
 
 	private String getFeedback(String destSlave) {
 		String feedback = null;
-		Socket socket = getSlaveSocket(NodeID.fromString(destSlave));
-		ObjectInputStream feedBackStream = recieveFeedBackStream(socket);
+		ObjectInputStream feedBackStream = recieveFeedBackStream(NodeID.fromString(destSlave));
 		try {
 			feedback = (String) feedBackStream.readObject();
 		} catch (ClassNotFoundException e) {
@@ -177,15 +178,12 @@ public class MasterNode {
 		return feedback;
 	}
 
-	private ObjectInputStream recieveFeedBackStream(Socket socket) {
-		ObjectInputStream inputObjChannel = null;
-		try {
-			inputObjChannel = new ObjectInputStream(socket.getInputStream());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return inputObjChannel;
+	private ObjectInputStream recieveFeedBackStream(NodeID slaveNodeID) {
+		return getInputStream(slaveNodeID);
+	}
+
+	private ObjectInputStream getInputStream(NodeID slaveNodeID) {
+		return slavesInputMap.get(slaveNodeID);
 	}
 
 	private void sendCommand(String slaveName, String command) {
@@ -193,6 +191,7 @@ public class MasterNode {
 		ObjectOutputStream outputStream = getSlaveSocketStream(slaveNodeID);
 		try {
 			outputStream.writeObject(command);
+			outputStream.reset();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
