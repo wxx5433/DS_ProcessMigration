@@ -10,6 +10,8 @@ public class SlaveSocketThread implements Runnable {
 	private NodeID masterNodeID;
 	private boolean stop;
 	private SlaveNode slaveNode;
+	private ObjectOutputStream outputStream;
+	private ObjectInputStream inputStream;
 
 	public SlaveSocketThread(SlaveNode slaveNode, NodeID masterNodeID) {
 		this.slaveNode = slaveNode;
@@ -23,21 +25,26 @@ public class SlaveSocketThread implements Runnable {
 		try {
 			socket = new Socket(masterNodeID.getHostName(),
 					masterNodeID.getPort());
+			inputStream= new ObjectInputStream(
+					socket.getInputStream());
+			outputStream = new ObjectOutputStream(socket.getOutputStream());
 			SendOnlineInfo(socket);
 
-			ObjectInputStream input = new ObjectInputStream(
-					socket.getInputStream());
 			while (!stop) {
 				// receive commands from masterNode
-				String command = (String) input.readObject();
-				// send feedback
-				Object feedback = slaveNode.recieveCommand(command);
-				System.out.println((CatProcess)feedback);
-				ObjectOutputStream out = new ObjectOutputStream(
-						socket.getOutputStream());
-				out.writeObject(feedback);
-				System.out.println((CatProcess)feedback);
-				out.reset();
+				Object recievedData = inputStream.readObject();
+				if(recievedData instanceof String){
+					String command = (String) recievedData;
+					// send feedback
+					Object feedback = slaveNode.recieveCommand(command);
+					outputStream.writeObject(feedback);
+					outputStream.reset();
+				}else if (recievedData instanceof MigratableProcess){
+					MigratableProcess migratableProcess = (MigratableProcess) recievedData;
+					Object feedback = slaveNode.launchMigratedProcess(migratableProcess);
+					outputStream.writeObject(feedback);
+					outputStream.reset();
+				}
 			}
 			socket.close();
 		} catch (IOException e) {
@@ -53,8 +60,8 @@ public class SlaveSocketThread implements Runnable {
 
 	private void SendOnlineInfo(Socket sock) throws IOException {
 		try {
-			PrintWriter out = new PrintWriter(sock.getOutputStream(), true);
-			out.println(slaveNode.getSlaveName());
+			outputStream.writeObject(slaveNode.getSlaveName());
+			outputStream.reset();
 			System.out.println(slaveNode.getSlaveName() + ":Registerred");
 		} catch (java.net.ConnectException e) {
 			sock.close();

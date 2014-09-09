@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SlaveNode {
-	private static final String DEFAULT_MASTER_ADDRESS = "128.237.217.93";
+//	private static final String DEFAULT_MASTER_ADDRESS = "128.237.217.93";
+	private static final String DEFAULT_MASTER_ADDRESS = "localhost";
 	private static final int DEFAULT_MASTER_PORT = 10000;
-	private static final String DEFAULT_SLAVE_ADDRESS = "128.237.217.93";
+	private static final String DEFAULT_SLAVE_ADDRESS = "localhost";
+//	private static final String DEFAULT_SLAVE_ADDRESS = "128.237.217.93";
 	private static final int DEFAULT_SLAVE_PORT = 8888;
 	private NodeID slaveNodeID;
 	private NodeID masterNodeID;
@@ -85,6 +87,15 @@ public class SlaveNode {
 			return String.valueOf(threadID);
 		}
 		return null;
+	}
+	
+	public String launchMigratedProcess(MigratableProcess migratableProcess) {
+		Thread runProcess = new Thread(migratableProcess);
+		runProcess.start();
+		long threadID = runProcess.getId();
+		threadManager.put(threadID, runProcess);
+		processManager.put(threadID, migratableProcess);
+		return String.valueOf(threadID);
 	}
 
 	private void processTerminate(String command) {
