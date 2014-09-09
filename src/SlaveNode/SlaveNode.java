@@ -1,13 +1,13 @@
 package SlaveNode;
 
 import java.util.HashMap;
-
+import MigratableProcess.CatProcess;
 import MigratableProcess.MigratableProcess;
 
 public class SlaveNode {
-	private static final String DEFAULT_MASTER_ADDRESS = "127.0.0.1";
+	private static final String DEFAULT_MASTER_ADDRESS = "localhost";
 	private static final int DEFAULT_MASTER_PORT = 10000;
-	private static final String DEFAULT_SLAVE_ADDRESS = "127.0.0.1";
+	private static final String DEFAULT_SLAVE_ADDRESS = "localhost";
 	private static final int DEFAULT_SLAVE_PORT = 8888;
 	private NodeID slaveNodeID;
 	private NodeID masterNodeID;
@@ -45,8 +45,7 @@ public class SlaveNode {
 			return "OK";
 		} else if (command.startsWith("migrate")) {
 			System.out.println("migrate");
-			migrateProcess(command);
-			return "OK";
+			return migrateProcess(command);
 		} else if (command.startsWith("processterminate")) {
 			System.out.println("process terminate");
 			processTerminate(command);
@@ -63,19 +62,39 @@ public class SlaveNode {
 		return "error";
 	}
 
+	@SuppressWarnings("null")
 	private String launchNewProcess(String command) {
 		String[] commandArray = command.split(" ");
 		String processName = commandArray[1];
-//		if (processName.equals("test")) {
-//			MigratableProcess migratableProcess = new test();
-//			Thread runProcess = new Thread(migratableProcess);
-//			runProcess.start();
-//			long threadID = runProcess.getId();
-//			threadManager.put(threadID, runProcess);
-//			processManager.put(threadID, migratableProcess);
-//			return String.valueOf(threadID);
-//		}
+		if (processName.equals("CatProcess")) {
+			String inputFilePath = commandArray[3];
+			String outputFilePath = commandArray[4];
+			String[] args = new String[2];
+			args[0] = inputFilePath;
+			args[1] = outputFilePath;
+			MigratableProcess migratableProcess = null;
+			try {
+				migratableProcess = new CatProcess(args);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			Thread runProcess = new Thread(migratableProcess);
+			runProcess.start();
+			long threadID = runProcess.getId();
+			threadManager.put(threadID, runProcess);
+			processManager.put(threadID, migratableProcess);
+			return String.valueOf(threadID);
+		}
 		return null;
+	}
+	
+	public String launchMigratedProcess(MigratableProcess migratableProcess) {
+		Thread runProcess = new Thread(migratableProcess);
+		runProcess.start();
+		long threadID = runProcess.getId();
+		threadManager.put(threadID, runProcess);
+		processManager.put(threadID, migratableProcess);
+		return String.valueOf(threadID);
 	}
 
 	private void processTerminate(String command) {
@@ -91,12 +110,14 @@ public class SlaveNode {
 		String[] commandArray = command.split(" ");
 		long threadID = Long.parseLong(commandArray[2]);
 		MigratableProcess migratableProcess = processManager.get(threadID);
+		System.out.println(migratableProcess);
 		migratableProcess.suspend();
+		System.out.println(migratableProcess);
 		return migratableProcess;
 	}
 
 	private void stop() {
-		socketThread.interrupt();
+		slaveSocket.terminate();
 		System.exit(0);
 	}
 

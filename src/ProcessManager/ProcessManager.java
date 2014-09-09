@@ -69,4 +69,10 @@ public class ProcessManager {
 		}
 		return availableNodeID;
 	}
+
+	public void listStatus() {
+		for (Entry<NodeID, SlaveProcesses> entry : processesManagement
+				.entrySet()) 
+			System.out.println("SlaveID: " + entry.getKey().toString() + "\t" + "Num: " + entry.getValue().getProcessNum());
+	}
 }
