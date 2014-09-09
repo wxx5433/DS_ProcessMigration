@@ -157,7 +157,9 @@ public class MasterNode {
 		ObjectInputStream feedBackStream = recieveFeedBackStream(NodeID.fromString(destSlave));
 		try {
 			feedback = (MigratableProcess) feedBackStream.readObject();
-		} catch (ClassNotFoundException | IOException e) {
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return feedback;
@@ -168,7 +170,9 @@ public class MasterNode {
 		ObjectInputStream feedBackStream = recieveFeedBackStream(NodeID.fromString(destSlave));
 		try {
 			feedback = (String) feedBackStream.readObject();
-		} catch (ClassNotFoundException | IOException e) {
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return feedback;
