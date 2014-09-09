@@ -1,4 +1,4 @@
-package MigratableProcess;
+package MasterNode;
 
 import java.util.Scanner;
 

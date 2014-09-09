@@ -1,4 +1,4 @@
-package MigratableProcess;
+package SlaveNode;
 
 public class NodeID {
 	private String hostName;

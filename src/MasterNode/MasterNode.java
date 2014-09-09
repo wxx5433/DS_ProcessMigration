@@ -1,10 +1,14 @@
-package MigratableProcess;
+package MasterNode;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
+
+import MigratableProcess.MigratableProcess;
+import ProcessManager.ProcessManager;
+import SlaveNode.NodeID;
 
 public class MasterNode {
 	private ConcurrentHashMap<NodeID, Socket> slavesManagement = new ConcurrentHashMap<NodeID, Socket>();

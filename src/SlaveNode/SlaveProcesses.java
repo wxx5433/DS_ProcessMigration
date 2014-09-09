@@ -1,4 +1,4 @@
-package MigratableProcess;
+package SlaveNode;
 
 import java.util.concurrent.ConcurrentHashMap;
 

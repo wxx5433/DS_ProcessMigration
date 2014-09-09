@@ -1,7 +1,10 @@
-package MigratableProcess;
+package ProcessManager;
 
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+
+import SlaveNode.NodeID;
+import SlaveNode.SlaveProcesses;
 
 public class ProcessManager {
 	private ConcurrentHashMap<NodeID, SlaveProcesses> processesManagement = new ConcurrentHashMap<NodeID, SlaveProcesses>();

@@ -1,11 +1,13 @@
-package MigratableProcess;
+package SlaveNode;
 
 import java.util.HashMap;
 
+import MigratableProcess.MigratableProcess;
+
 public class SlaveNode {
-	private static final String DEFAULT_MASTER_ADDRESS = "128.237.217.93";
+	private static final String DEFAULT_MASTER_ADDRESS = "127.0.0.1";
 	private static final int DEFAULT_MASTER_PORT = 10000;
-	private static final String DEFAULT_SLAVE_ADDRESS = "128.237.217.93";
+	private static final String DEFAULT_SLAVE_ADDRESS = "127.0.0.1";
 	private static final int DEFAULT_SLAVE_PORT = 8888;
 	private NodeID slaveNodeID;
 	private NodeID masterNodeID;
