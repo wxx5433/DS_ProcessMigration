@@ -1,8 +1,9 @@
 package SlaveNode;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
-import MigratableProcess.CatProcess;
 import MigratableProcess.MigratableProcess;
 
 public class SlaveNode {
@@ -87,19 +88,40 @@ public class SlaveNode {
 	}
 
 	private String launchNewProcess(String processName, String[] args) {
-		if (processName.equals("CatProcess")) {
-			MigratableProcess migratableProcess = null;
-			try {
-				migratableProcess = new CatProcess(args);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			Thread runProcess = new Thread(migratableProcess);
+		try {
+			Class<?> migratableProcessClass = Class
+					.forName("MigratableProcess." + processName);
+			Constructor<?> constructor = migratableProcessClass
+					.getConstructor(String[].class);
+			System.out.println(constructor.getName());
+			System.out.println("tur: " + constructor.isVarArgs());
+			MigratableProcess migratableProcess = (MigratableProcess) constructor
+					.newInstance(new Object[] { args });
+			Thread runProcess = new Thread((Runnable) migratableProcess);
 			runProcess.start();
 			long threadID = runProcess.getId();
 			threadManager.put(threadID, runProcess);
-			processManager.put(threadID, migratableProcess);
+			processManager.put(threadID, (MigratableProcess) migratableProcess);
 			return String.valueOf(threadID);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return null;
 	}

@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 
-
 import TransactionalIO.TransactionalFileInputStream;
 import TransactionalIO.TransactionalFileOutputStream;
 
@@ -26,7 +25,7 @@ public class CatProcess extends MigratableProcess {
 			System.out.println("Usage: CatProcess <inputFile> <outputFile>");
 			throw new Exception("Invalid arguments!");
 		}
-		
+
 		try {
 			inFile = new TransactionalFileInputStream(args[0]);
 			outFile = new TransactionalFileOutputStream(args[1]);
@@ -57,23 +56,25 @@ public class CatProcess extends MigratableProcess {
 					finished = true;
 					break;
 				}
-				
+
 				System.out.println(line);
 				out.println(line);
-				
+
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(10000);
 				} catch (InterruptedException e) {
-					
+
 				}
-			} 
-		}catch (EOFException e) {
+			}
+		} catch (EOFException e) {
 			// TODO: handle exception
 		} catch (IOException e) {
 			// TODO: handle exception
 		}
-		/* make sure to write the last line we read to the output file 
-		 * before we close the file */
+		/*
+		 * make sure to write the last line we read to the output file before we
+		 * close the file
+		 */
 		if (suspending) {
 			System.out.println("Migrate!!!");
 			try {
@@ -85,13 +86,13 @@ public class CatProcess extends MigratableProcess {
 			}
 		}
 		suspending = false;
-//		try {
-//			in.close();
-//			out.close();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// try {
+		// in.close();
+		// out.close();
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 	}
 
 	@Override
@@ -116,10 +117,9 @@ public class CatProcess extends MigratableProcess {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public boolean hasFinished() {
 		return finished;
 	}
-
 
 }

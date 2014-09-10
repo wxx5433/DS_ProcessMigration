@@ -152,12 +152,6 @@ public class MasterNode {
 		/* parse the command */
 		String[] commandArray = command.split(" ");
 		String processName = commandArray[1];
-//		String destSlave = null;
-//		if (commandArray.length == 3) {
-//			destSlave = commandArray[2];
-//		} else {
-//			destSlave = getAvailableDestSlave().toString();
-//		}
 		/* send the command to a specific slave node */
 		String destSlave = getAvailableDestSlave().toString();
 		sendCommand(destSlave, command);
@@ -200,6 +194,7 @@ public class MasterNode {
 
 	/**
 	 * Get feedback from a slave node.
+	 * 
 	 * @param destSlave
 	 * @return
 	 */
@@ -227,6 +222,7 @@ public class MasterNode {
 
 	/**
 	 * Send command to a specific slave.
+	 * 
 	 * @param slaveName
 	 * @param command
 	 */
