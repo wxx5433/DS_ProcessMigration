@@ -31,14 +31,15 @@ public class SlaveSocketThread implements Runnable {
 	public void run() {
 		Socket socket;
 		try {
+			/* connect the newly started slave node to master node */
 			socket = new Socket(masterNodeID.getHostName(), masterNodeID.getPort());
 			inputStream= new ObjectInputStream(socket.getInputStream());
 			outputStream = new ObjectOutputStream(socket.getOutputStream());
 			/* tell master node that the new slave node is online! */
 			SendOnlineInfo(socket);
-			inputStream= new ObjectInputStream(
-					socket.getInputStream());
 			
+			/* Start receiving master's command */
+			inputStream= new ObjectInputStream(socket.getInputStream());
 			while (!stop) {
 				/* receive commands from masterNode */
 				Object recievedData = inputStream.readObject();
@@ -73,6 +74,11 @@ public class SlaveSocketThread implements Runnable {
 		}
 	}
 
+	/**
+	 * Tell the master node that a new slave node has logged in.
+	 * @param sock
+	 * @throws IOException
+	 */
 	private void SendOnlineInfo(Socket sock) throws IOException {
 		try {
 			outputStream.writeObject(slaveNode.getSlaveName());

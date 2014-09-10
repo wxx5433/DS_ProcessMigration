@@ -12,7 +12,6 @@ import MigratableProcess.DiffProcess;
 public class TestDiffProcess {
 
 	public static void main(String[] args) throws InterruptedException {
-		// TODO Auto-generated method stub
 		DiffProcess diffProcess = null;
 		try {
 			diffProcess = new DiffProcess(args);
