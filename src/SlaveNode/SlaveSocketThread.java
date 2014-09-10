@@ -3,7 +3,6 @@ package SlaveNode;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 
 import MigratableProcess.MigratableProcess;
@@ -37,7 +36,9 @@ public class SlaveSocketThread implements Runnable {
 			outputStream = new ObjectOutputStream(socket.getOutputStream());
 			/* tell master node that the new slave node is online! */
 			SendOnlineInfo(socket);
-
+			inputStream= new ObjectInputStream(
+					socket.getInputStream());
+			
 			while (!stop) {
 				/* receive commands from masterNode */
 				Object recievedData = inputStream.readObject();

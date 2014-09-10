@@ -43,13 +43,16 @@ public class CatProcess extends MigratableProcess {
 		System.out.println("run start!!");
 		System.out.println("run:  " + inFile);
 		System.out.println("run:  " + outFile);
+		System.out.println(suspending);
+
 		PrintStream out = new PrintStream(outFile);
+		System.out.println(suspending);
 		DataInputStream in = new DataInputStream(inFile);
-		
+		System.out.println(suspending);
+
 		try {
 			while (!suspending) {
 				String line = in.readLine();
-				
 				if (line == null) {
 					finished = true;
 					break;

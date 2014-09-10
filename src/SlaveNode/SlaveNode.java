@@ -1,6 +1,7 @@
 package SlaveNode;
 
 import java.util.HashMap;
+
 import MigratableProcess.CatProcess;
 import MigratableProcess.MigratableProcess;
 
@@ -53,26 +54,40 @@ public class SlaveNode {
 			return "OK";
 		} else if (command.startsWith("launch")) {
 			System.out.println("launch");
-			String threadID = launchNewProcess(command);
+			String threadID = targetLaunch(command, 1);
 			return threadID;
-		} else if (command.startsWith("getmigrated")) {
-			System.out.println("getmigrated");
-			String threadID = launchNewProcess(command);
+		} else if (command.startsWith("targetlaunch")) {
+			System.out.println("targetlaunch");
+			String threadID = targetLaunch(command, 2);
 			return threadID;
 		}
 		return "error";
 	}
 
-	@SuppressWarnings("null")
-	private String launchNewProcess(String command) {
-		String[] commandArray = command.split(" ");
-		String processName = commandArray[1];
+	private String targetLaunch(String command, int pos) {
+		System.out.println("recived command is: " + command);
+		String commandBak = command;
+		String[] commandArray = commandBak.split(" ");
+		String processName = commandArray[pos];
+		System.out.println("process Name is: " + processName);
+		int blankPos = command.indexOf(" ");
+		String[] args = null;
+		blankPos = command.indexOf(" ", blankPos + 1);
+		if (pos == 2)
+			blankPos = command.indexOf(" ", blankPos + 1);
+		if (blankPos != -1) {
+			String argsStr = command.substring(blankPos + 1, command.length());
+			args = argsStr.split(" ");
+		}
+		for (int i = 0; i < args.length; i++) {
+			System.out.println(args[i]);
+		}
+
+		return launchNewProcess(processName, args);
+	}
+
+	private String launchNewProcess(String processName, String[] args) {
 		if (processName.equals("CatProcess")) {
-			String inputFilePath = commandArray[3];
-			String outputFilePath = commandArray[4];
-			String[] args = new String[2];
-			args[0] = inputFilePath;
-			args[1] = outputFilePath;
 			MigratableProcess migratableProcess = null;
 			try {
 				migratableProcess = new CatProcess(args);
@@ -88,11 +103,13 @@ public class SlaveNode {
 		}
 		return null;
 	}
-	
+
 	public String launchMigratedProcess(MigratableProcess migratableProcess) {
+		migratableProcess.resume();
 		Thread runProcess = new Thread(migratableProcess);
 		runProcess.start();
 		long threadID = runProcess.getId();
+		System.out.println("rerun threadID is: " + threadID);
 		threadManager.put(threadID, runProcess);
 		processManager.put(threadID, migratableProcess);
 		return String.valueOf(threadID);
