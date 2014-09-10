@@ -152,14 +152,14 @@ public class MasterNode {
 		/* parse the command */
 		String[] commandArray = command.split(" ");
 		String processName = commandArray[1];
-		String destSlave = null;
+//		String destSlave = null;
 //		if (commandArray.length == 3) {
-			destSlave = commandArray[2];
+//			destSlave = commandArray[2];
 //		} else {
 //			destSlave = getAvailableDestSlave().toString();
 //		}
 		/* send the command to a specific slave node */
-//		String destSlave = getAvailableDestSlave().toString();
+		String destSlave = getAvailableDestSlave().toString();
 		sendCommand(destSlave, command);
 		String feedback = getFeedback(destSlave);
 		System.out.println("launch new process on " + destSlave

@@ -2,9 +2,19 @@ package SlaveNode;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SlaveProcesses {
+/**
+ * This class manages all processes running on a slave node.
+ * @author Xiaoxiang Wu(xiaoxiaw)
+ * @author Ye Zhou
+ */
+public class SlaveProcessesManager {
 	private ConcurrentHashMap<Long, String> slaveProcessesManagement = new ConcurrentHashMap<Long, String>();
 
+	/**
+	 * add new process to this slave node.
+	 * @param threadID
+	 * @param processName
+	 */
 	public void newProcessLaunched(long threadID, String processName) {
 		slaveProcessesManagement.put(threadID, processName);
 	}
