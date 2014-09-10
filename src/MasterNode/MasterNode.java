@@ -28,6 +28,7 @@ public class MasterNode {
 
 	/**
 	 * Initialize MasterNode on a specific node
+	 * 
 	 * @param portNum
 	 */
 	public MasterNode(int portNum) {
@@ -59,12 +60,15 @@ public class MasterNode {
 
 	/**
 	 * Parse users' input command
+	 * 
 	 * @param command
 	 */
 	public void parseCommand(String command) {
 		System.out.println(command + "input");
 		if (command.startsWith("launch")) {
 			launchNewProcess(command);
+		} else if (command.startsWith("targetlaunch")) {
+			targetLaunchNewProcess(command);
 		} else if (command.startsWith("migrate")) {
 			migrateProcess(command);
 		} else if (command.startsWith("list")) {
@@ -120,6 +124,8 @@ public class MasterNode {
 		sendMigratableProcess(migratedDestSlave, migratableProcess);
 		String feedback = getFeedback(migratedDestSlave);
 		int threadID = Integer.parseInt(feedback);
+		System.out.println("get the migrated process rerun threadID: "
+				+ threadID);
 		processManager.newProcessLaunched(migratedDestSlave, threadID,
 				processManager.getProcessName(migrateSourceSlave,
 						threadIDSource));
@@ -145,12 +151,19 @@ public class MasterNode {
 	private void launchNewProcess(String command) {
 		String[] commandArray = command.split(" ");
 		String processName = commandArray[1];
-		String destSlave = null;
-//		if (commandArray.length == 3) {
-			destSlave = commandArray[2];
-//		} else {
-//			destSlave = getAvailableDestSlave().toString();
-//		}
+		String destSlave = getAvailableDestSlave().toString();
+		sendCommand(destSlave, command);
+		String feedback = getFeedback(destSlave);
+		System.out.println("launch new process on " + destSlave
+				+ " threadID is " + feedback);
+		int threadID = Integer.parseInt(feedback);
+		processManager.newProcessLaunched(destSlave, threadID, processName);
+	}
+
+	private void targetLaunchNewProcess(String command) {
+		String[] commandArray = command.split(" ");
+		String destSlave = commandArray[1];
+		String processName = commandArray[2];
 		sendCommand(destSlave, command);
 		String feedback = getFeedback(destSlave);
 		System.out.println(feedback);
@@ -159,17 +172,14 @@ public class MasterNode {
 		System.out.println(feedback);
 	}
 
-	private Socket getSlaveSocket(NodeID slaveNodeID) {
-		return slavesManagement.get(slaveNodeID);
-	}
-
 	private ObjectOutputStream getSlaveSocketStream(NodeID slaveNodeID) {
 		return slavesOutputMap.get(slaveNodeID);
 	}
 
 	private MigratableProcess getMigratedProcess(String destSlave) {
 		MigratableProcess feedback = null;
-		ObjectInputStream feedBackStream = recieveFeedBackStream(NodeID.fromString(destSlave));
+		ObjectInputStream feedBackStream = recieveFeedBackStream(NodeID
+				.fromString(destSlave));
 		try {
 			feedback = (MigratableProcess) feedBackStream.readObject();
 		} catch (ClassNotFoundException e) {
@@ -182,7 +192,8 @@ public class MasterNode {
 
 	private String getFeedback(String destSlave) {
 		String feedback = null;
-		ObjectInputStream feedBackStream = recieveFeedBackStream(NodeID.fromString(destSlave));
+		ObjectInputStream feedBackStream = recieveFeedBackStream(NodeID
+				.fromString(destSlave));
 		try {
 			feedback = (String) feedBackStream.readObject();
 		} catch (ClassNotFoundException e) {
