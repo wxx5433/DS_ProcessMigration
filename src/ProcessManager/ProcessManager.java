@@ -20,9 +20,9 @@ public class ProcessManager {
 
 	/**
 	 * Register the newly launched process.
-	 * @param slaveNodeID - which the new process i
-	 * @param threadID
-	 * @param processName
+	 * @param slaveNodeID Which slave node the process is launched on
+	 * @param threadID  The thread id that runs this process
+	 * @param processName The process's name
 	 */
 	public void newProcessLaunched(NodeID slaveNodeID, long threadID,
 			String processName) {

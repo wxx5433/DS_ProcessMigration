@@ -8,6 +8,13 @@ import java.net.Socket;
 
 import MigratableProcess.MigratableProcess;
 
+/**
+ * This class is used to initialize a socket thread for slave nodes to 
+ * have a socked connection with master node.
+ * @author Xiaoxiang Wu(xiaoxiaw)
+ * @author Ye Zhou
+ *
+ */
 public class SlaveSocketThread implements Runnable {
 	private NodeID masterNodeID;
 	private boolean stop;
@@ -25,25 +32,30 @@ public class SlaveSocketThread implements Runnable {
 	public void run() {
 		Socket socket;
 		try {
-			socket = new Socket(masterNodeID.getHostName(),
-					masterNodeID.getPort());
-			inputStream= new ObjectInputStream(
-					socket.getInputStream());
+			socket = new Socket(masterNodeID.getHostName(), masterNodeID.getPort());
+			inputStream= new ObjectInputStream(socket.getInputStream());
 			outputStream = new ObjectOutputStream(socket.getOutputStream());
+			/* tell master node that the new slave node is online! */
 			SendOnlineInfo(socket);
 
 			while (!stop) {
-				// receive commands from masterNode
+				/* receive commands from masterNode */
 				Object recievedData = inputStream.readObject();
 				if(recievedData instanceof String){
 					String command = (String) recievedData;
-					// send feedback
-					Object feedback = slaveNode.recieveCommand(command);
+					/* get feedback of the command executed on slave node */
+					Object feedback = slaveNode.executeCommand(command);
+					/* send feedback to master node */
 					outputStream.writeObject(feedback);
 					outputStream.reset();
 				}else if (recievedData instanceof MigratableProcess){
+					/* 
+					 * This slave node is asked to execute 
+					 * a process migrated from other slave node 
+					 */
 					MigratableProcess migratableProcess = (MigratableProcess) recievedData;
 					Object feedback = slaveNode.launchMigratedProcess(migratableProcess);
+					/* send feedback to master node */
 					outputStream.writeObject(feedback);
 					outputStream.reset();
 				}

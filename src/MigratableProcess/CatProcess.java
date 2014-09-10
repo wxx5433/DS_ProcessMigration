@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import javax.print.attribute.standard.PrinterState;
 
 import TransactionalIO.TransactionalFileInputStream;
 import TransactionalIO.TransactionalFileOutputStream;
@@ -20,8 +19,6 @@ public class CatProcess extends MigratableProcess {
 
 	private TransactionalFileInputStream inFile;
 	private TransactionalFileOutputStream outFile;
-	
-	
 
 	public CatProcess(String[] args) throws Exception {
 		super(args);
@@ -62,7 +59,7 @@ public class CatProcess extends MigratableProcess {
 				out.println(line);
 				
 				try {
-					Thread.sleep(100000);
+					Thread.sleep(10000);
 				} catch (InterruptedException e) {
 					
 				}
@@ -72,18 +69,29 @@ public class CatProcess extends MigratableProcess {
 		} catch (IOException e) {
 			// TODO: handle exception
 		}
+		/* make sure to write the last line we read to the output file 
+		 * before we close the file */
+		if (suspending) {
+			try {
+				inFile.migrate();
+				outFile.migrate();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		suspending = false;
-	}
-
-	@Override
-	public void suspend() {
 		try {
-			inFile.migrate();
-			outFile.migrate();
+			in.close();
+			out.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void suspend() {
 		suspending = true;
 	}
 

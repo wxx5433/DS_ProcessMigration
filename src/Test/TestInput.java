@@ -1,7 +1,9 @@
-package TransactionalIO;
+package Test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import TransactionalIO.TransactionalFileInputStream;
 
 public class TestInput {
 

@@ -37,7 +37,8 @@ public class SlaveNode {
 		return slaveNodeID.toString();
 	}
 
-	public Object recieveCommand(String command) {
+	/* execute command send from master node */
+	public Object executeCommand(String command) {
 		System.out.println(command);
 		if (command.startsWith("terminate")) {
 			System.out.println("terminate");

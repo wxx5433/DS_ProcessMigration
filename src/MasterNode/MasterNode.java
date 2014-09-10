@@ -143,6 +143,7 @@ public class MasterNode {
 	}
 
 	private void launchNewProcess(String command) {
+		/* parse the command */
 		String[] commandArray = command.split(" ");
 		String processName = commandArray[1];
 		String destSlave = null;
@@ -151,6 +152,7 @@ public class MasterNode {
 //		} else {
 //			destSlave = getAvailableDestSlave().toString();
 //		}
+		/* send the command to a specific slave node */
 		sendCommand(destSlave, command);
 		String feedback = getFeedback(destSlave);
 		System.out.println(feedback);
@@ -180,6 +182,11 @@ public class MasterNode {
 		return feedback;
 	}
 
+	/**
+	 * Get feedback from a slave node.
+	 * @param destSlave
+	 * @return
+	 */
 	private String getFeedback(String destSlave) {
 		String feedback = null;
 		ObjectInputStream feedBackStream = recieveFeedBackStream(NodeID.fromString(destSlave));
@@ -201,6 +208,11 @@ public class MasterNode {
 		return slavesInputMap.get(slaveNodeID);
 	}
 
+	/**
+	 * Send command to a specific slave.
+	 * @param slaveName
+	 * @param command
+	 */
 	private void sendCommand(String slaveName, String command) {
 		NodeID slaveNodeID = NodeID.fromString(slaveName);
 		ObjectOutputStream outputStream = getSlaveSocketStream(slaveNodeID);
