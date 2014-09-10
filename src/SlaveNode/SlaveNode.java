@@ -15,7 +15,7 @@ public class SlaveNode {
 	private Thread socketThread;
 	private SlaveSocketThread slaveSocket;
 	private HashMap<Long, Thread> threadManager = new HashMap<Long, Thread>();
-	private HashMap<Long, MigratableProcess> processManager = new HashMap<Long, MigratableProcess>();
+	private HashMap<Long, MigratableProcess> slaveProcessManager = new HashMap<Long, MigratableProcess>();
 
 	public SlaveNode() {
 		slaveNodeID = new NodeID(DEFAULT_SLAVE_ADDRESS, DEFAULT_SLAVE_PORT);
@@ -98,7 +98,7 @@ public class SlaveNode {
 			runProcess.start();
 			long threadID = runProcess.getId();
 			threadManager.put(threadID, runProcess);
-			processManager.put(threadID, migratableProcess);
+			slaveProcessManager.put(threadID, migratableProcess);
 			return String.valueOf(threadID);
 		}
 		return null;
@@ -111,7 +111,7 @@ public class SlaveNode {
 		long threadID = runProcess.getId();
 		System.out.println("rerun threadID is: " + threadID);
 		threadManager.put(threadID, runProcess);
-		processManager.put(threadID, migratableProcess);
+		slaveProcessManager.put(threadID, migratableProcess);
 		return String.valueOf(threadID);
 	}
 
@@ -120,14 +120,14 @@ public class SlaveNode {
 		long threadID = Long.parseLong(commandArray[2]);
 		Thread threadStop = threadManager.get(threadID);
 		threadStop.interrupt();
-		processManager.remove(threadID);
+		slaveProcessManager.remove(threadID);
 		threadManager.remove(threadID);
 	}
 
 	private Object migrateProcess(String command) {
 		String[] commandArray = command.split(" ");
 		long threadID = Long.parseLong(commandArray[2]);
-		MigratableProcess migratableProcess = processManager.get(threadID);
+		MigratableProcess migratableProcess = slaveProcessManager.get(threadID);
 		System.out.println(migratableProcess);
 		migratableProcess.suspend();
 		System.out.println(migratableProcess);
