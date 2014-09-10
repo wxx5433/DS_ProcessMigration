@@ -72,6 +72,7 @@ public class CatProcess extends MigratableProcess {
 		/* make sure to write the last line we read to the output file 
 		 * before we close the file */
 		if (suspending) {
+			System.out.println("Migrate!!!");
 			try {
 				inFile.migrate();
 				outFile.migrate();
@@ -81,13 +82,13 @@ public class CatProcess extends MigratableProcess {
 			}
 		}
 		suspending = false;
-		try {
-			in.close();
-			out.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			in.close();
+//			out.close();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 	@Override

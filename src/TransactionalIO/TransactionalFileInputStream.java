@@ -119,6 +119,7 @@ public class TransactionalFileInputStream extends InputStream implements Seriali
 	 * @throws IOException If an error occurs
 	 */
 	public void resume() throws IOException {
+		System.out.println("resume: " + filename);
 		fis = new FileInputStream(filename);
 		fis.skip(offset);
 		migrated = false;
