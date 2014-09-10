@@ -14,6 +14,7 @@ public class SlaveNode {
 	private NodeID masterNodeID;
 	private Thread socketThread;
 	private SlaveSocketThread slaveSocket;
+	/* save  */
 	private HashMap<Long, Thread> threadManager = new HashMap<Long, Thread>();
 	private HashMap<Long, MigratableProcess> slaveProcessManager = new HashMap<Long, MigratableProcess>();
 
