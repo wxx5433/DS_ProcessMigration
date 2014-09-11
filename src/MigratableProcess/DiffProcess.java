@@ -36,14 +36,10 @@ public class DiffProcess extends MigratableProcess {
 			throw new Exception("Invalid arguments!");
 		}
 
-		try {
-			inFile1 = new TransactionalFileInputStream(args[0]);
-			inFile2 = new TransactionalFileInputStream(args[1]);
-			outFile = new TransactionalFileOutputStream(args[2]);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		inFile1 = new TransactionalFileInputStream(args[0]);
+		inFile2 = new TransactionalFileInputStream(args[1]);
+		outFile = new TransactionalFileOutputStream(args[2]);
+		
 		suspending = false;
 		finished = false;
 		lineNumber = 0;
@@ -51,6 +47,9 @@ public class DiffProcess extends MigratableProcess {
 		file2_done = false;
 	}
 
+	/**
+	 * Start a thread to compare two files.
+	 */
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
@@ -58,6 +57,7 @@ public class DiffProcess extends MigratableProcess {
 		System.out.println("run:  " + inFile1);
 		System.out.println("run:  " + inFile2);
 		System.out.println("run:  " + outFile);
+
 		PrintStream out = new PrintStream(outFile);
 		DataInputStream in1 = new DataInputStream(inFile1);
 		DataInputStream in2 = new DataInputStream(inFile2);
@@ -80,23 +80,24 @@ public class DiffProcess extends MigratableProcess {
 					}
 				}
 
+				/* finish with both files */
 				if (file1_done && file2_done) {
 					finished = true;
 					break;
 				}
 
 				System.out.println("lineNumber: " + lineNumber);
-				if (line1 == null) {
+				if (line1 == null) {  /* done with file1 */
 					System.out.println("File2: " + line2);
 					out.println("Line " + lineNumber);
 					out.println("File2: " + line2);
 					out.println();
-				} else if (line2 == null) {
+				} else if (line2 == null) {  /* done with file2 */
 					System.out.println("File1: " + line1);
 					out.println("Line " + lineNumber);
 					out.println("File1: " + line1);
 					out.println();
-				} else if (!line1.equals(line2)) {
+				} else if (!line1.equals(line2)) {  /* lines in file1 & file2 are different */
 					System.out.println("File1: " + line1);
 					System.out.println("File2: " + line2);
 					out.println("Line " + lineNumber);
@@ -157,6 +158,10 @@ public class DiffProcess extends MigratableProcess {
 
 	}
 
+	/**
+	 * If a job has finished yet
+	 * @return true if the job has finished, false otherwise.
+	 */
 	public boolean hasFinished() {
 		return finished;
 	}

@@ -1,4 +1,4 @@
-package SlaveNode;
+package ProcessManager;
 
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;

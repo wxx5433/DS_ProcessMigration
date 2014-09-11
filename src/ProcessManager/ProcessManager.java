@@ -4,7 +4,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import SlaveNode.NodeID;
-import SlaveNode.SlaveProcessesManager;
 
 /**
  * <code>ProcessManager</code> takes responsibility for all the connected
@@ -84,7 +83,7 @@ public class ProcessManager {
 	}
 
 	/**
-	 * Fina a slave node with minimum processes running on it.
+	 * Fina a slave node with least processes running on it.
 	 * 
 	 * @return the slave running minimum processes.
 	 */
@@ -106,6 +105,9 @@ public class ProcessManager {
 	 * 
 	 */
 	public void listStatus() {
+		if (processesManagement.isEmpty()) {
+			System.out.println("No process running!");
+		}
 		for (Entry<NodeID, SlaveProcessesManager> entry : processesManagement
 				.entrySet()) {
 			System.out.println("SlaveID: " + entry.getKey().toString() + "\t"

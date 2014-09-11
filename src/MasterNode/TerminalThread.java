@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 /**
  * This is the class that the <code>MasterNode</code> use to run a terminal
- * thread, so that it can receive users' inupt.
+ * thread, so that it can receive users' input.
  * 
  * @author Xiaoxiang Wu(xiaoxiaw)
  * @author Ye Zhou(yezhou)

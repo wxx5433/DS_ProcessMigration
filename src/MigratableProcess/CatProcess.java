@@ -10,7 +10,8 @@ import TransactionalIO.TransactionalFileInputStream;
 import TransactionalIO.TransactionalFileOutputStream;
 
 /**
- * 
+ * A migratable process that can read data in a file and then write
+ * it to another file.
  * 
  * @author Xiaoxiang Wu(xiaoxiaw)
  * @author Ye Zhou
@@ -32,13 +33,9 @@ public class CatProcess extends MigratableProcess {
 			throw new Exception("Invalid arguments!");
 		}
 
-		try {
-			inFile = new TransactionalFileInputStream(args[0]);
-			outFile = new TransactionalFileOutputStream(args[1]);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		inFile = new TransactionalFileInputStream(args[0]);
+		outFile = new TransactionalFileOutputStream(args[1]);
+		
 		suspending = false;
 		finished = false;
 	}
@@ -48,12 +45,9 @@ public class CatProcess extends MigratableProcess {
 		System.out.println("run start!!");
 		System.out.println("run:  " + inFile);
 		System.out.println("run:  " + outFile);
-		System.out.println(suspending);
 
 		PrintStream out = new PrintStream(outFile);
-		System.out.println(suspending);
 		DataInputStream in = new DataInputStream(inFile);
-		System.out.println(suspending);
 
 		try {
 			while (!suspending) {
@@ -92,13 +86,6 @@ public class CatProcess extends MigratableProcess {
 			}
 		}
 		suspending = false;
-		// try {
-		// in.close();
-		// out.close();
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 	}
 
 	@Override
@@ -124,6 +111,10 @@ public class CatProcess extends MigratableProcess {
 		}
 	}
 
+	/**
+	 * If a job has finished yet
+	 * @return true if the job has finished, false otherwise.
+	 */
 	public boolean hasFinished() {
 		return finished;
 	}

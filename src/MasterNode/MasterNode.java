@@ -242,6 +242,10 @@ public class MasterNode {
 		String destSlave = getAvailableDestSlave().toString();
 		sendCommand(destSlave, command);
 		String feedback = getFeedback(destSlave);
+		if (feedback.equals("Fail")) {
+			System.out.println("Fail to launch the process, please check arguments!");
+			return ;
+		}
 		System.out.println("launch new process on " + destSlave
 				+ " threadID is " + feedback);
 		int threadID = Integer.parseInt(feedback);
@@ -249,14 +253,16 @@ public class MasterNode {
 	}
 
 	/**
-	 * launch new process on an specific slave node
+	 * launch new process on a specific slave node
 	 * 
 	 * @param command
 	 */
 	private void targetLaunchNewProcess(String command) {
+		/* parse the command */
 		String[] commandArray = command.split(" ");
 		String destSlave = commandArray[1];
 		String processName = commandArray[2];
+		/* send the command to a specific slave node */
 		sendCommand(destSlave, command);
 		String feedback = getFeedback(destSlave);
 		int threadID = Integer.parseInt(feedback);
@@ -352,12 +358,6 @@ public class MasterNode {
 		System.exit(0);
 	}
 
-	/**
-	 * Stop MasterNode
-	 * 
-	 * @param args
-	 *            Port number
-	 */
 	public static void main(String[] args) throws Exception {
 		if (args.length == 0) {
 			MasterNode masterNode = new MasterNode();

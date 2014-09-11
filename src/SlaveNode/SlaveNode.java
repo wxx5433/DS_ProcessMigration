@@ -1,5 +1,6 @@
 package SlaveNode;
 
+import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -7,7 +8,7 @@ import java.util.HashMap;
 import MigratableProcess.MigratableProcess;
 
 /**
- * <code>SlaveNode</code> restores all the running thread information and their
+ * <code>SlaveNode</code> stores all the running thread information and their
  * related <code>MigratableProcess</code>. It also needs to analyze the command
  * or serialized data from <code>MasterNode</code>
  * 
@@ -48,9 +49,9 @@ public class SlaveNode {
 	}
 
 	/**
-	 * get the slave name
+	 * get the slave's name
 	 * 
-	 * @return the slave Name including hostname/IP address and port
+	 * @return the slave Name including hostname, IP address and port
 	 */
 	public String getSlaveName() {
 		return slaveNodeID.toString();
@@ -92,8 +93,7 @@ public class SlaveNode {
 	 * its parameters
 	 * 
 	 * @param command
-	 * @param pos
-	 *            offset under different commands
+	 * @param pos offset under different commands
 	 * @return command running result
 	 */
 	private String targetLaunch(String command, int pos) {
@@ -131,10 +131,14 @@ public class SlaveNode {
 					.forName("MigratableProcess." + processName);
 			Constructor<?> constructor = migratableProcessClass
 					.getConstructor(String[].class);
-			System.out.println(constructor.getName());
-			System.out.println("tur: " + constructor.isVarArgs());
-			MigratableProcess migratableProcess = (MigratableProcess) constructor
+
+			MigratableProcess migratableProcess = null;
+			try {
+				migratableProcess = (MigratableProcess) constructor
 					.newInstance(new Object[] { args });
+			} catch (Exception e) {
+				return "Fail";
+			}
 			Thread runProcess = new Thread((Runnable) migratableProcess);
 			runProcess.start();
 			long threadID = runProcess.getId();
@@ -142,26 +146,14 @@ public class SlaveNode {
 			processManager.put(threadID, (MigratableProcess) migratableProcess);
 			return String.valueOf(threadID);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			return "Fail";
 		} catch (SecurityException e) {
-			e.printStackTrace();
+			return "Fail";
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return "Fail";
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+			return "Fail";
+		} 
 	}
 
 	/**
