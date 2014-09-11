@@ -9,6 +9,12 @@ import java.io.PrintStream;
 import TransactionalIO.TransactionalFileInputStream;
 import TransactionalIO.TransactionalFileOutputStream;
 
+/**
+ * 
+ * 
+ * @author Xiaoxiang Wu(xiaoxiaw)
+ * @author Ye Zhou
+ */
 public class CatProcess extends MigratableProcess {
 	/**
 	 * The flag to show if the process is suspended.

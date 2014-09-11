@@ -6,6 +6,14 @@ import java.util.HashMap;
 
 import MigratableProcess.MigratableProcess;
 
+/**
+ * <code>SlaveNode</code> restores all the running thread information and their
+ * related <code>MigratableProcess</code>. It also needs to analyze the command
+ * or serialized data from <code>MasterNode</code>
+ * 
+ * @author Xiaoxiang Wu(xiaoxiaw)
+ * @author Ye Zhou(yezhou)
+ */
 public class SlaveNode {
 	private static final String DEFAULT_MASTER_ADDRESS = "localhost";
 	private static final int DEFAULT_MASTER_PORT = 10000;
@@ -29,17 +37,31 @@ public class SlaveNode {
 		masterNodeID = new NodeID(masterAddress, masterPort);
 	}
 
+	/**
+	 * Start the socket connection thread
+	 * 
+	 */
 	public void start() {
 		slaveSocket = new SlaveSocketThread(this, masterNodeID);
 		socketThread = new Thread(slaveSocket);
 		socketThread.start();
 	}
 
+	/**
+	 * get the slave name
+	 * 
+	 * @return the slave Name including hostname/IP address and port
+	 */
 	public String getSlaveName() {
 		return slaveNodeID.toString();
 	}
 
-	/* execute command send from master node */
+	/**
+	 * execute command recieved from master node
+	 * 
+	 * @param command
+	 * @return status or threadID info
+	 */
 	public Object executeCommand(String command) {
 		System.out.println(command);
 		if (command.startsWith("terminate")) {
@@ -65,6 +87,15 @@ public class SlaveNode {
 		return "error";
 	}
 
+	/**
+	 * Analyze the command and get out the information about the processName and
+	 * its parameters
+	 * 
+	 * @param command
+	 * @param pos
+	 *            offset under different commands
+	 * @return command running result
+	 */
 	private String targetLaunch(String command, int pos) {
 		System.out.println("recived command is: " + command);
 		String commandBak = command;
@@ -87,6 +118,13 @@ public class SlaveNode {
 		return launchNewProcess(processName, args);
 	}
 
+	/**
+	 * Start new process and return its threadID
+	 * 
+	 * @param processName
+	 * @param args
+	 * @return threadID
+	 */
 	private String launchNewProcess(String processName, String[] args) {
 		try {
 			Class<?> migratableProcessClass = Class
@@ -126,6 +164,12 @@ public class SlaveNode {
 		return null;
 	}
 
+	/**
+	 * Launch a process migrated from other slaves
+	 * 
+	 * @param migratableProcess
+	 * @return relaunched process threadID
+	 */
 	public String launchMigratedProcess(MigratableProcess migratableProcess) {
 		migratableProcess.resume();
 		Thread runProcess = new Thread(migratableProcess);
@@ -137,6 +181,11 @@ public class SlaveNode {
 		return String.valueOf(threadID);
 	}
 
+	/**
+	 * terminate a specific thread
+	 * 
+	 * @param command
+	 */
 	private void processTerminate(String command) {
 		String[] commandArray = command.split(" ");
 		long threadID = Long.parseLong(commandArray[2]);
@@ -146,6 +195,12 @@ public class SlaveNode {
 		threadManager.remove(threadID);
 	}
 
+	/**
+	 * migrate process from this slave node
+	 * 
+	 * @param command
+	 * @return migratableProcess
+	 */
 	private Object migrateProcess(String command) {
 		String[] commandArray = command.split(" ");
 		long threadID = Long.parseLong(commandArray[2]);
@@ -156,6 +211,9 @@ public class SlaveNode {
 		return migratableProcess;
 	}
 
+	/**
+	 * Stop slave node
+	 */
 	private void stop() {
 		slaveSocket.terminate();
 		System.exit(0);

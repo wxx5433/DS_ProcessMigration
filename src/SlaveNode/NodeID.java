@@ -1,5 +1,12 @@
 package SlaveNode;
 
+/**
+ * Just put the hostname/IP address and port number all in And override some
+ * functions to make this class can be the key of map
+ * 
+ * @author Xiaoxiang Wu(xiaoxiaw)
+ * @author Ye Zhou(yezhou)
+ */
 public class NodeID {
 	private String hostName;
 	private int port;

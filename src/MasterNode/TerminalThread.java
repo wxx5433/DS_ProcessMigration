@@ -7,7 +7,7 @@ import java.util.Scanner;
  * thread, so that it can receive users' inupt.
  * 
  * @author Xiaoxiang Wu(xiaoxiaw)
- * @author Ye Zhou
+ * @author Ye Zhou(yezhou)
  */
 public class TerminalThread implements Runnable {
 	/**

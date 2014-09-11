@@ -7,6 +7,15 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * Listen thread in <code>MasterNode</code>, it is launched when
+ * <code>MasterNode</code> calls function start() It is responsible for waiting
+ * connection with <code>SlaveNode</code>
+ * 
+ * @author Xiaoxiang Wu(xiaoxiaw)
+ * @author Ye Zhou(yezhou)
+ *
+ */
 public class SocketListenThread implements Runnable {
 	private MasterNode masterNode;
 	private int portNum;
@@ -28,11 +37,12 @@ public class SocketListenThread implements Runnable {
 					Socket socket = listener.accept();
 					InputStream input = socket.getInputStream();
 					ObjectInputStream inputStream = new ObjectInputStream(input);
-					String slaveName = (String)inputStream.readObject();
+					String slaveName = (String) inputStream.readObject();
 					ObjectOutputStream out = new ObjectOutputStream(
 							socket.getOutputStream());
 					System.out.println(slaveName + ":online!");
-					masterNode.newSlaveOnline(slaveName, socket, out, inputStream);
+					masterNode.newSlaveOnline(slaveName, socket, out,
+							inputStream);
 				} catch (IOException e) {
 					System.out.println("Error occur when listening:");
 					e.printStackTrace();

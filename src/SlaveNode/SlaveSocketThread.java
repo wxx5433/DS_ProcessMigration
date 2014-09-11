@@ -12,7 +12,7 @@ import MigratableProcess.MigratableProcess;
  * socked connection with master node.
  * 
  * @author Xiaoxiang Wu(xiaoxiaw)
- * @author Ye Zhou
+ * @author Ye Zhou(yezhou)
  *
  */
 public class SlaveSocketThread implements Runnable {

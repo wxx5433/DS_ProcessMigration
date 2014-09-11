@@ -4,21 +4,19 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.zip.GZIPOutputStream;
 
 import TransactionalIO.TransactionalFileInputStream;
 import TransactionalIO.TransactionalFileOutputStream;
 
 /**
  * A Migratable process that will find difference between two files.
+ * 
  * @author Xiaoxiang Wu(xiaoxiaw)
  * @author Ye Zhou
  */
 public class DiffProcess extends MigratableProcess {
-	
+
 	private volatile boolean suspending;
 	private boolean finished;
 	private int lineNumber;
@@ -28,17 +26,16 @@ public class DiffProcess extends MigratableProcess {
 	private TransactionalFileInputStream inFile1;
 	private TransactionalFileInputStream inFile2;
 	private TransactionalFileOutputStream outFile;
-	
-	
-	
+
 	public DiffProcess(String[] args) throws Exception {
 		super(args);
-		
+
 		if (args.length != 3) {
-			System.out.println("Usage: DiffProcess <inputFile1> <inputFile2> <outputFile>");
+			System.out
+					.println("Usage: DiffProcess <inputFile1> <inputFile2> <outputFile>");
 			throw new Exception("Invalid arguments!");
 		}
-		
+
 		try {
 			inFile1 = new TransactionalFileInputStream(args[0]);
 			inFile2 = new TransactionalFileInputStream(args[1]);
@@ -64,9 +61,9 @@ public class DiffProcess extends MigratableProcess {
 		PrintStream out = new PrintStream(outFile);
 		DataInputStream in1 = new DataInputStream(inFile1);
 		DataInputStream in2 = new DataInputStream(inFile2);
-		
+
 		String line1 = null, line2 = null;
-		
+
 		try {
 			while (!suspending) {
 				++lineNumber;
@@ -82,7 +79,7 @@ public class DiffProcess extends MigratableProcess {
 						file2_done = true;
 					}
 				}
-				
+
 				if (file1_done && file2_done) {
 					finished = true;
 					break;
@@ -107,9 +104,9 @@ public class DiffProcess extends MigratableProcess {
 					out.println("File2: " + line2);
 					out.println();
 				}
-				
+
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(15000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -157,12 +154,11 @@ public class DiffProcess extends MigratableProcess {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	public boolean hasFinished() {
 		return finished;
 	}
-	
-	
+
 }
