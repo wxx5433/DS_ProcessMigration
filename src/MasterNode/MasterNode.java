@@ -155,11 +155,8 @@ public class MasterNode {
 		String[] commandArray = command.split(" ");
 		String slaveName = commandArray[1];
 		sendCommand(slaveName, command);
-		String feedback = getFeedback(slaveName);
-		if (feedback.equals("OK")) {
-			System.out.println("Removed Slave " + slaveName);
-			processManager.removeSlave(slaveName);
-		}
+		System.out.println("Removed Slave " + slaveName);
+		processManager.removeSlave(slaveName);
 	}
 
 	/**
@@ -243,8 +240,9 @@ public class MasterNode {
 		sendCommand(destSlave, command);
 		String feedback = getFeedback(destSlave);
 		if (feedback.equals("Fail")) {
-			System.out.println("Fail to launch the process, please check arguments!");
-			return ;
+			System.out
+					.println("Fail to launch the process, please check arguments!");
+			return;
 		}
 		System.out.println("launch new process on " + destSlave
 				+ " threadID is " + feedback);
@@ -265,6 +263,11 @@ public class MasterNode {
 		/* send the command to a specific slave node */
 		sendCommand(destSlave, command);
 		String feedback = getFeedback(destSlave);
+		if (feedback.equals("Fail")) {
+			System.out
+					.println("Fail to launch the process, please check arguments!");
+			return;
+		}
 		int threadID = Integer.parseInt(feedback);
 		processManager.newProcessLaunched(destSlave, threadID, processName);
 		System.out.println("launch new process on " + destSlave
