@@ -181,8 +181,8 @@ public class SlaveNode {
 	private void processTerminate(String command) {
 		String[] commandArray = command.split(" ");
 		long threadID = Long.parseLong(commandArray[2]);
-		Thread threadStop = threadManager.get(threadID);
-		threadStop.interrupt();
+		MigratableProcess processStop = processManager.get(threadID);
+		processStop.stop();
 		processManager.remove(threadID);
 		threadManager.remove(threadID);
 	}

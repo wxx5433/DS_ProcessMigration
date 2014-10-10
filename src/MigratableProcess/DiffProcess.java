@@ -17,8 +17,6 @@ import TransactionalIO.TransactionalFileOutputStream;
  */
 public class DiffProcess extends MigratableProcess {
 
-	private volatile boolean suspending;
-	private boolean finished;
 	private int lineNumber;
 	private boolean file1_done;
 	private boolean file2_done;
@@ -118,7 +116,7 @@ public class DiffProcess extends MigratableProcess {
 		} catch (IOException e) {
 			// TODO: handle exception
 		}
-		if (suspending) {
+		if (suspending && !finished) {
 			try {
 				inFile1.migrate();
 				inFile2.migrate();
@@ -156,14 +154,6 @@ public class DiffProcess extends MigratableProcess {
 			e.printStackTrace();
 		}
 
-	}
-
-	/**
-	 * If a job has finished yet
-	 * @return true if the job has finished, false otherwise.
-	 */
-	public boolean hasFinished() {
-		return finished;
 	}
 
 }

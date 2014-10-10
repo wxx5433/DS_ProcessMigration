@@ -10,6 +10,11 @@ import java.io.Serializable;
  */
 public abstract class MigratableProcess implements Runnable, Serializable {
 	
+	/**
+	 * The flag to show if the process is suspended.
+	 */
+	protected volatile boolean suspending;
+	protected boolean finished;
 	
 	/**
 	 * Any class extends <code>MigratableProcess</code> should take 
@@ -17,7 +22,7 @@ public abstract class MigratableProcess implements Runnable, Serializable {
 	 * @param args Array of String
 	 */
 	public MigratableProcess(String[] args) {
-		
+		suspending = false;
 	}
 	
 	/**
@@ -43,5 +48,20 @@ public abstract class MigratableProcess implements Runnable, Serializable {
 	 * to return restore the state of the process object.
 	 */
 	public abstract void resume();
+	
+	/**
+	 * This method is to stop running of the thread.
+	 */
+	public void stop() {
+		suspending = true;
+		finished = true;
+	}
 		
+	/**
+	 * If a job has finished yet
+	 * @return true if the job has finished, false otherwise.
+	 */
+	public boolean hasFinished() {
+		return finished;
+	}
 }

@@ -17,11 +17,6 @@ import TransactionalIO.TransactionalFileOutputStream;
  * @author Ye Zhou
  */
 public class CatProcess extends MigratableProcess {
-	/**
-	 * The flag to show if the process is suspended.
-	 */
-	private volatile boolean suspending;
-	private boolean finished;
 
 	private TransactionalFileInputStream inFile;
 	private TransactionalFileOutputStream outFile;
@@ -75,7 +70,7 @@ public class CatProcess extends MigratableProcess {
 		 * make sure to write the last line we read to the output file before we
 		 * close the file
 		 */
-		if (suspending) {
+		if (suspending && !finished) {
 			System.out.println("Migrate!!!");
 			try {
 				inFile.migrate();
@@ -110,13 +105,4 @@ public class CatProcess extends MigratableProcess {
 			e.printStackTrace();
 		}
 	}
-
-	/**
-	 * If a job has finished yet
-	 * @return true if the job has finished, false otherwise.
-	 */
-	public boolean hasFinished() {
-		return finished;
-	}
-
 }
